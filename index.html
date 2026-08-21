@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Escudo Andino | App de Fotoprotección Inteligente</title>
 
-<!-- PWA: manifest, favicon e íconos de instalación (imágenes alojadas en el mismo repositorio) -->
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="./img/favicon.png">
 <link rel="apple-touch-icon" href="./img/favicon.png">
@@ -76,6 +75,11 @@
         <span class="mini-icon">⭐</span>
         <span class="mini-label">Planes</span>
       </div>
+      <div class="mini-card" onclick="abrirChat()">
+        <span class="mini-card-badge-gemini">Gemini</span>
+        <span class="mini-icon">💬</span>
+        <span class="mini-label">Asistente IA</span>
+      </div>
     </div>
 
     <div class="card advertencia-card">
@@ -90,6 +94,12 @@
       <span class="chip chip-proximamente">PRO · Próximamente</span>
       <h3>Análisis de piel por fotografía</h3>
       <p>Estamos desarrollando un módulo que analizará el tono de piel a partir de una foto para afinar aún más la recomendación. Estará disponible para usuarios del plan Pro como parte de nuestra hoja de ruta.</p>
+    </div>
+
+    <div class="card roadmap-card">
+      <span class="chip-gemini">⚡ Gemini · Activo en Pro</span>
+      <h3 style="margin-top:10px;">Asistente IA generativo</h3>
+      <p>Los usuarios del plan Pro ya conversan con un asistente potenciado por la API de Gemini, conectado mediante un servidor seguro (Cloudflare Worker). Los usuarios Free usan el asistente básico por reglas.</p>
     </div>
   </section>
 
@@ -262,10 +272,12 @@
           <li>✅ Alertas de reaplicación</li>
           <li>✅ Consejos y educación solar</li>
           <li>✅ Calculadora de dosis</li>
+          <li>✅ Asistente conversacional básico</li>
           <li>✅ 1 perfil de usuario</li>
           <li>✅ Historial de los últimos 5 registros</li>
           <li>🔒 Exportación de historial</li>
           <li>🔒 Perfiles múltiples</li>
+          <li>🔒 Asistente IA generativo (Gemini)</li>
           <li>🔒 Análisis de piel por foto</li>
         </ul>
       </div>
@@ -278,6 +290,7 @@
           <li>✅ Historial ilimitado</li>
           <li>✅ Exportación a CSV</li>
           <li>✅ Perfiles múltiples (varios trabajadores)</li>
+          <li>✅ <span class="chip-gemini" style="font-size:0.68rem; padding:3px 9px;">⚡ Gemini</span> Asistente IA generativo — activo</li>
           <li>✅ Acceso prioritario al análisis de piel por foto</li>
           <li>✅ Reportes de uso para supervisores</li>
         </ul>
@@ -304,7 +317,7 @@
       <p class="card-desc">Proyecto de emprendimiento tecnológico y social — I.E. Santa Rita de Jesús, Trujillo.</p>
       <p class="card-desc"><strong>Grado:</strong> 4.° "B" &nbsp;|&nbsp; <strong>Área:</strong> Educación para el Trabajo</p>
       <p class="card-desc"><strong>Docente asesor:</strong> Calet Isai Cáceres Vergara</p>
-      <p class="card-desc"><strong>Herramientas de IA:</strong> Claude (formulación y app) · ChatGPT (etiquetado y material educativo)</p>
+      <p class="card-desc"><strong>Herramientas de IA:</strong> Claude (formulación de la fórmula) · Gemini (asistente conversacional Pro) · ChatGPT (etiquetado y material educativo)</p>
     </div>
   </section>
 
@@ -316,8 +329,11 @@
   <p>4B - Equipo EPT | Asesor: Mg. Calet Cáceres Vergara</p>
 </footer>
 
-<!-- FAB -->
+<!-- FAB registro -->
 <button class="fab" id="fabRegistro" title="Registrar aplicación rápida">+</button>
+
+<!-- FAB chatbot -->
+<button class="fab fab-chat" id="fabChat" title="Asistente Escudo Andino">💬</button>
 
 <!-- BOTTOM NAVIGATION (Material 3) -->
 <nav class="bottomnav">
@@ -337,6 +353,33 @@
     <span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span>
   </button>
 </nav>
+
+<!-- PANEL DEL CHATBOT (bottom sheet) -->
+<div class="chat-overlay" id="chatOverlay"></div>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <img src="./img/escudo-sf.png" alt="" class="chat-avatar">
+    <div class="chat-header-textos">
+      <strong>Asistente Escudo Andino <span class="chip-gemini" id="chipGeminiHeader" style="display:none;">⚡ Gemini</span></strong>
+      <span id="subtituloChat">Free: reglas · Pro: IA generativa (Gemini)</span>
+    </div>
+    <button class="icon-btn" id="btnCerrarChat">✕</button>
+  </div>
+
+  <div class="chat-sugerencias" id="chatSugerencias">
+    <button class="chip chip-sugerencia">¿Qué ingredientes tiene?</button>
+    <button class="chip chip-sugerencia">¿Cada cuánto reaplico?</button>
+    <button class="chip chip-sugerencia">¿Es seguro?</button>
+    <button class="chip chip-sugerencia">¿Cuánto cuesta?</button>
+  </div>
+
+  <div class="chat-mensajes" id="chatMensajes"></div>
+
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." class="select-md">
+    <button class="icon-btn-outline chat-btn-enviar" id="btnEnviarChat">➤</button>
+  </div>
+</div>
 
 <div class="snackbar" id="snackbar"></div>
 

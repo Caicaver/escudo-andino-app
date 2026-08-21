@@ -127,11 +127,23 @@ body {
   cursor: pointer;
   transition: transform 0.15s, background 0.2s;
   box-shadow: var(--shadow-1);
+  position: relative;
 }
 .mini-card:hover { background: var(--md-primary-container); transform: translateY(-2px); }
 .mini-card-pro { background: linear-gradient(160deg, #FFF3D6, var(--md-surface-container)); border: 1px solid var(--md-gold); }
 .mini-icon { font-size: 1.6rem; display: block; margin-bottom: 6px; }
 .mini-label { font-size: 0.72rem; font-weight: 500; color: var(--md-on-surface-variant); }
+.mini-card-badge-gemini {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 0.55rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #4285F4, #9B72CB 55%, #D96570);
+  color: white;
+  font-weight: 700;
+}
 
 /* GENERIC CARD */
 .card {
@@ -171,6 +183,21 @@ body {
   color: var(--md-on-secondary-container);
 }
 .chip-proximamente { background: var(--md-tertiary); color: white; margin-bottom: 8px; }
+
+/* ===== Distintivo "Gemini" (nuevo) ===== */
+.chip-gemini {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #4285F4 0%, #9B72CB 55%, #D96570 100%);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
 .chip-group { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
 .chip-select {
   border: 1.5px solid var(--md-outline);
@@ -374,6 +401,13 @@ body {
   cursor: pointer;
   z-index: 40;
 }
+.fab-chat {
+  right: auto;
+  left: 20px;
+  background: linear-gradient(135deg, #4285F4, #9B72CB 55%, #D96570);
+  border-radius: 50%;
+  font-size: 1.4rem;
+}
 
 /* BOTTOM NAV */
 .bottomnav {
@@ -422,6 +456,107 @@ body {
 }
 .snackbar.mostrar { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ===================== CHATBOT ===================== */
+.chat-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 69;
+}
+.chat-overlay.visible { display: block; }
+
+.chat-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 680px;
+  margin: 0 auto;
+  height: 72vh;
+  max-height: 640px;
+  background: var(--md-surface);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 70;
+}
+.chat-panel.abierto { transform: translateY(0); }
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--md-primary);
+  color: white;
+  border-radius: 20px 20px 0 0;
+}
+.chat-avatar { width: 34px; height: 34px; object-fit: contain; background: white; border-radius: 50%; padding: 4px; }
+.chat-header-textos { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.chat-header-textos strong { font-size: 0.92rem; display: flex; align-items: center; gap: 6px; }
+.chat-header-textos span { font-size: 0.72rem; opacity: 0.9; }
+
+.chat-sugerencias {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--md-surface-container-high);
+}
+.chip-sugerencia {
+  border: none;
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  padding: 7px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chat-mensajes {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mensaje {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+.mensaje-usuario {
+  align-self: flex-end;
+  background: var(--md-primary);
+  color: white;
+  border-radius: 16px 16px 4px 16px;
+}
+.mensaje-bot {
+  align-self: flex-start;
+  background: var(--md-surface-container);
+  color: var(--md-on-surface);
+  border-radius: 16px 16px 16px 4px;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--md-surface-container-high);
+}
+.chat-input-row input { flex: 1; margin: 0; }
+.chat-btn-enviar { background: var(--md-primary); color: white; border-color: var(--md-primary); }
+
 @media (max-width: 400px) {
   .grid-cards { grid-template-columns: repeat(2, 1fr); }
+  .chat-panel { height: 80vh; }
 }

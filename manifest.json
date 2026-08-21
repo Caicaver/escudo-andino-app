@@ -23,7 +23,7 @@
       "purpose": "any"
     },
     {
-      "src": "./img/favicon.png",
+      "src": "./img/favicon-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
