@@ -87,6 +87,12 @@ function esProUsuario() {
   return localStorage.getItem(CLAVE_PRO) === 'true';
 }
 
+function desactivarPro() {
+  localStorage.setItem(CLAVE_PRO, 'false');
+  actualizarUIPlan();
+  mostrarSnackbar('Has vuelto al plan Free');
+}
+
 function actualizarUIPlan() {
   const pro = esProUsuario();
   document.getElementById('chipPlanActual').textContent = pro ? 'Plan Pro ⭐' : 'Plan Free';
@@ -94,6 +100,10 @@ function actualizarUIPlan() {
   document.getElementById('avisoHistorialFree').style.display = pro ? 'none' : 'block';
   document.getElementById('btnNuevoPerfil').disabled = !pro;
   document.getElementById('btnExportarCSV').style.opacity = pro ? '1' : '0.5';
+
+  // Acceso rápido para salir de Pro, visible junto al chip de plan en Inicio
+  const btnSalirProInicio = document.getElementById('btnSalirProInicio');
+  if (btnSalirProInicio) btnSalirProInicio.style.display = pro ? 'inline-block' : 'none';
 
   const chipGeminiHeader = document.getElementById('chipGeminiHeader');
   const subtituloChat = document.getElementById('subtituloChat');
@@ -117,11 +127,12 @@ document.getElementById('btnActivarPro').addEventListener('click', () => {
     mostrarSnackbar('Código no válido. Verifica el código de demostración.');
   }
 });
-document.getElementById('btnDesactivarPro').addEventListener('click', () => {
-  localStorage.setItem(CLAVE_PRO, 'false');
-  actualizarUIPlan();
-  mostrarSnackbar('Has vuelto al plan Free');
-});
+document.getElementById('btnDesactivarPro').addEventListener('click', desactivarPro);
+
+const btnSalirProInicio = document.getElementById('btnSalirProInicio');
+if (btnSalirProInicio) {
+  btnSalirProInicio.addEventListener('click', desactivarPro);
+}
 
 /* =====================================================================
    PERFILES (Pro)

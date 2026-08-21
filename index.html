@@ -19,7 +19,9 @@
 <!-- TOP APP BAR (Material 3) -->
 <header class="topbar">
   <div class="topbar-content">
-    <img src="./img/escudo-sf.png" alt="Escudo Andino" class="logo-topbar">
+    <div class="logo-topbar-wrap">
+      <img src="./img/escudo-sf.png" alt="Escudo Andino" class="logo-topbar">
+    </div>
     <div class="topbar-titles">
       <span class="topbar-title">Escudo Andino</span>
       <span class="topbar-subtitle">Fotoprotección andina inteligente</span>
@@ -51,9 +53,14 @@
       <img src="./img/escudo-cf.png" alt="Escudo Andino" class="hero-logo">
       <h1 class="hero-title">Protección solar con raíces andinas</h1>
       <p class="hero-text">Formulado con óxido de zinc, sábila y moringa. Impulsado por inteligencia artificial para acompañarte en cada aplicación.</p>
-      <span class="chip plan-chip" id="chipPlanActual">Plan Free</span>
+      <div class="plan-status-row">
+        <span class="chip plan-chip" id="chipPlanActual">Plan Free</span>
+        <button class="link-salir-pro" id="btnSalirProInicio" style="display:none;">Salir de Pro</button>
+      </div>
     </div>
 
+    <!-- CATEGORÍA 1: Herramientas de uso diario -->
+    <p class="grid-section-label">Tu rutina diaria</p>
     <div class="grid-cards">
       <div class="mini-card" onclick="irA('recomendacion')">
         <span class="mini-icon">🧴</span>
@@ -71,6 +78,11 @@
         <span class="mini-icon">💡</span>
         <span class="mini-label">Consejos UV</span>
       </div>
+    </div>
+
+    <!-- CATEGORÍA 2: Cuenta y asistencia -->
+    <p class="grid-section-label">Cuenta y asistencia IA</p>
+    <div class="grid-cards grid-cards-secundaria">
       <div class="mini-card mini-card-pro" onclick="irA('planes')">
         <span class="mini-icon">⭐</span>
         <span class="mini-label">Planes</span>
@@ -79,6 +91,10 @@
         <span class="mini-card-badge-gemini">Gemini</span>
         <span class="mini-icon">💬</span>
         <span class="mini-label">Asistente IA</span>
+      </div>
+      <div class="mini-card" onclick="irA('acerca')">
+        <span class="mini-icon">ℹ️</span>
+        <span class="mini-label">Acerca de</span>
       </div>
     </div>
 
