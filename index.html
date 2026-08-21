@@ -27,7 +27,7 @@
       <span class="topbar-subtitle">Fotoprotección andina inteligente</span>
     </div>
     <button class="icon-btn" id="btnInstalar" aria-label="Instalar app" title="Instalar aplicación" style="display:none;">
-      <span class="material-icon">⬇️</span>
+      <span class="material-icon">↓</span>
     </button>
     <button class="icon-btn" id="btnTema" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro">
       <span class="material-icon">🌗</span>
@@ -57,6 +57,11 @@
         <span class="chip plan-chip" id="chipPlanActual">Plan Free</span>
         <button class="link-salir-pro" id="btnSalirProInicio" style="display:none;">Salir de Pro</button>
       </div>
+    </div>
+
+    <!-- Advertencia compacta (siempre visible, sin ocupar tanto espacio) -->
+    <div class="advertencia-compacta">
+      ⚠️ <strong>Prototipo experimental:</strong> FPS no certificado. Combina siempre con sombra, ropa y sombrero.
     </div>
 
     <!-- CATEGORÍA 1: Herramientas de uso diario -->
@@ -98,24 +103,17 @@
       </div>
     </div>
 
-    <div class="card advertencia-card">
-      <div class="advertencia-icono">⚠️</div>
-      <div>
-        <strong>Prototipo experimental</strong>
-        <p>El FPS de Escudo Andino aún no está certificado en laboratorio. Combina siempre su uso con sombra, ropa de manga larga y sombrero.</p>
+    <!-- Hoja de ruta consolidada (antes eran 2 tarjetas separadas) -->
+    <p class="grid-section-label">Novedades y hoja de ruta</p>
+    <div class="card roadmap-card-consolidada">
+      <div class="roadmap-item">
+        <span class="chip chip-proximamente">Próximamente</span>
+        <p>Análisis de piel por fotografía para afinar aún más la recomendación (disponible en el plan Pro).</p>
       </div>
-    </div>
-
-    <div class="card roadmap-card">
-      <span class="chip chip-proximamente">PRO · Próximamente</span>
-      <h3>Análisis de piel por fotografía</h3>
-      <p>Estamos desarrollando un módulo que analizará el tono de piel a partir de una foto para afinar aún más la recomendación. Estará disponible para usuarios del plan Pro como parte de nuestra hoja de ruta.</p>
-    </div>
-
-    <div class="card roadmap-card">
-      <span class="chip-gemini">⚡ Gemini · Activo en Pro</span>
-      <h3 style="margin-top:10px;">Asistente IA generativo</h3>
-      <p>Los usuarios del plan Pro ya conversan con un asistente potenciado por la API de Gemini, conectado mediante un servidor seguro (Cloudflare Worker). Los usuarios Free usan el asistente básico por reglas.</p>
+      <div class="roadmap-item">
+        <span class="chip-gemini">⚡ Activo en Pro</span>
+        <p>Asistente conversacional con IA generativa (Gemini), conectado mediante un servidor seguro.</p>
+      </div>
     </div>
   </section>
 
