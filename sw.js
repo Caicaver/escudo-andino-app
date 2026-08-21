@@ -1,11 +1,14 @@
 /* Escudo Andino — Service Worker mínimo (habilita instalación PWA y uso básico offline) */
-const CACHE_NAME = 'escudo-andino-cache-v1';
+const CACHE_NAME = 'escudo-andino-cache-v2';
 const ARCHIVOS_CACHE = [
   './',
   './index.html',
   './styles.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './img/escudo-sf.png',
+  './img/escudo-cf.png',
+  './img/favicon.png'
 ];
 
 self.addEventListener('install', (event) => {

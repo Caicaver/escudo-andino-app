@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Escudo Andino | App de Fotoprotección Inteligente</title>
 
-<!-- PWA: manifest, favicon e íconos de instalación -->
+<!-- PWA: manifest, favicon e íconos de instalación (imágenes alojadas en el mismo repositorio) -->
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="https://www.dropbox.com/scl/fi/og5b8w96x05173ug1o1jq/Escudo_Andino_SF-1.png?rlkey=xg8y8h9k2ubw11ic513a6gir2&st=f1kjghls&raw=1">
-<link rel="apple-touch-icon" href="https://www.dropbox.com/scl/fi/og5b8w96x05173ug1o1jq/Escudo_Andino_SF-1.png?rlkey=xg8y8h9k2ubw11ic513a6gir2&st=f1kjghls&raw=1">
+<link rel="icon" type="image/png" href="./img/favicon.png">
+<link rel="apple-touch-icon" href="./img/favicon.png">
 <meta name="theme-color" content="#4A6B3D">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,7 @@
 <!-- TOP APP BAR (Material 3) -->
 <header class="topbar">
   <div class="topbar-content">
-    <img src="https://www.dropbox.com/scl/fi/ynzqoyu3alwasip5diljl/Escudo_Andino_SF.png?rlkey=mx598597ydyidjs5kl8fg48we&st=6lj4ucuo&raw=1" alt="Escudo Andino" class="logo-topbar">
+    <img src="./img/escudo-sf.png" alt="Escudo Andino" class="logo-topbar">
     <div class="topbar-titles">
       <span class="topbar-title">Escudo Andino</span>
       <span class="topbar-subtitle">Fotoprotección andina inteligente</span>
@@ -49,9 +49,10 @@
     </div>
 
     <div class="hero-card">
-      <img src="https://www.dropbox.com/scl/fi/gb3y5dqdoxk0rwh21bitj/Escudo_Andino_cF.png?rlkey=0s8kn2hkuavnnx3lf8fijw5op&st=t86r1kr8&raw=1" alt="Escudo Andino" class="hero-logo">
+      <img src="./img/escudo-cf.png" alt="Escudo Andino" class="hero-logo">
       <h1 class="hero-title">Protección solar con raíces andinas</h1>
       <p class="hero-text">Formulado con óxido de zinc, sábila y moringa. Impulsado por inteligencia artificial para acompañarte en cada aplicación.</p>
+      <span class="chip plan-chip" id="chipPlanActual">Plan Free</span>
     </div>
 
     <div class="grid-cards">
@@ -71,6 +72,10 @@
         <span class="mini-icon">💡</span>
         <span class="mini-label">Consejos UV</span>
       </div>
+      <div class="mini-card mini-card-pro" onclick="irA('planes')">
+        <span class="mini-icon">⭐</span>
+        <span class="mini-label">Planes</span>
+      </div>
     </div>
 
     <div class="card advertencia-card">
@@ -82,9 +87,9 @@
     </div>
 
     <div class="card roadmap-card">
-      <span class="chip chip-proximamente">Próximamente</span>
+      <span class="chip chip-proximamente">PRO · Próximamente</span>
       <h3>Análisis de piel por fotografía</h3>
-      <p>Estamos desarrollando un módulo que analizará el tono de piel a partir de una foto para afinar aún más la recomendación. Forma parte de nuestra hoja de ruta de mejora continua.</p>
+      <p>Estamos desarrollando un módulo que analizará el tono de piel a partir de una foto para afinar aún más la recomendación. Estará disponible para usuarios del plan Pro como parte de nuestra hoja de ruta.</p>
     </div>
   </section>
 
@@ -136,6 +141,15 @@
   <section class="screen hidden" id="screen-seguimiento">
     <h2 class="screen-title">Seguimiento de uso</h2>
 
+    <div class="card" id="selectorPerfilCard">
+      <label class="field-label">Perfil activo</label>
+      <div class="perfil-row">
+        <select id="selectorPerfil" class="select-md"></select>
+        <button class="icon-btn-outline" id="btnNuevoPerfil" title="Nuevo perfil (Pro)">➕</button>
+      </div>
+      <p class="tips-text-small" id="avisoPerfilesFree">🔒 El plan Free permite un solo perfil. Actualiza a Pro para gestionar varios trabajadores o clientes.</p>
+    </div>
+
     <div class="stats-row">
       <div class="stat-card">
         <span class="stat-num" id="statTotal">0</span>
@@ -154,11 +168,15 @@
     <div class="card">
       <div class="card-header-row">
         <h3>Historial</h3>
-        <button class="btn-text" id="btnLimpiarHistorial">Borrar historial</button>
+        <div>
+          <button class="btn-text" id="btnExportarCSV">⬇️ Exportar CSV</button>
+          <button class="btn-text" id="btnLimpiarHistorial">Borrar</button>
+        </div>
       </div>
       <ul class="historial-lista" id="historialLista">
         <li class="historial-vacio">Aún no has registrado aplicaciones. Ve a "Recomendación" y usa "Registrar aplicación ahora".</li>
       </ul>
+      <p class="tips-text-small" id="avisoHistorialFree">🔒 El plan Free muestra tus últimos 5 registros. Actualiza a Pro para historial ilimitado y exportación a CSV.</p>
     </div>
   </section>
 
@@ -230,11 +248,58 @@
     </details>
   </section>
 
+  <!-- ============ PANTALLA: PLANES (FREE / PRO) ============ -->
+  <section class="screen hidden" id="screen-planes">
+    <h2 class="screen-title">Planes Escudo Andino</h2>
+    <p class="card-desc" style="margin-bottom:16px;">Todas las funciones esenciales de fotoprotección son y seguirán siendo gratuitas. El plan Pro está pensado para cooperativas agrícolas, promotores de salud y mercados que necesitan gestionar a varios usuarios.</p>
+
+    <div class="tabla-planes">
+      <div class="col-plan">
+        <h3>Free</h3>
+        <span class="precio">S/ 0</span>
+        <ul class="lista-plan">
+          <li>✅ Recomendación personalizada</li>
+          <li>✅ Alertas de reaplicación</li>
+          <li>✅ Consejos y educación solar</li>
+          <li>✅ Calculadora de dosis</li>
+          <li>✅ 1 perfil de usuario</li>
+          <li>✅ Historial de los últimos 5 registros</li>
+          <li>🔒 Exportación de historial</li>
+          <li>🔒 Perfiles múltiples</li>
+          <li>🔒 Análisis de piel por foto</li>
+        </ul>
+      </div>
+      <div class="col-plan col-plan-pro">
+        <span class="chip chip-proximamente" style="margin-bottom:8px;">Recomendado para cooperativas</span>
+        <h3>Pro</h3>
+        <span class="precio">S/ 5 / mes por grupo</span>
+        <ul class="lista-plan">
+          <li>✅ Todo lo del plan Free</li>
+          <li>✅ Historial ilimitado</li>
+          <li>✅ Exportación a CSV</li>
+          <li>✅ Perfiles múltiples (varios trabajadores)</li>
+          <li>✅ Acceso prioritario al análisis de piel por foto</li>
+          <li>✅ Reportes de uso para supervisores</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="field-label">Código de activación (demostración)</label>
+      <div class="perfil-row">
+        <input type="text" id="inputCodigoPro" class="select-md" placeholder="Ingresa el código Pro">
+        <button class="btn-filled" id="btnActivarPro" style="margin-top:0; width:auto; white-space:nowrap;">Activar</button>
+      </div>
+      <p class="tips-text-small">Código de prueba para la feria institucional: <strong>ESCUDO2026</strong></p>
+      <button class="btn-text" id="btnDesactivarPro" style="margin-top:10px;">Volver al plan Free</button>
+    </div>
+  </section>
+
   <!-- ============ PANTALLA: ACERCA DE ============ -->
   <section class="screen hidden" id="screen-acerca">
     <h2 class="screen-title">Acerca del proyecto</h2>
     <div class="card acerca-card">
-      <img src="https://www.dropbox.com/scl/fi/gb3y5dqdoxk0rwh21bitj/Escudo_Andino_cF.png?rlkey=0s8kn2hkuavnnx3lf8fijw5op&st=t86r1kr8&raw=1" alt="Escudo Andino" class="acerca-logo">
+      <img src="./img/escudo-cf.png" alt="Escudo Andino" class="acerca-logo">
       <h3>Escudo Andino</h3>
       <p class="card-desc">Proyecto de emprendimiento tecnológico y social — I.E. Santa Rita de Jesús, Trujillo.</p>
       <p class="card-desc"><strong>Grado:</strong> 4.° "B" &nbsp;|&nbsp; <strong>Área:</strong> Educación para el Trabajo</p>

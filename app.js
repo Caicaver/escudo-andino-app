@@ -3,9 +3,7 @@
 /* ---------- Registro del Service Worker (habilita instalación PWA) ---------- */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
-      /* Si el navegador bloquea el SW (p.ej. abierto como file://), la app sigue funcionando normalmente */
-    });
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
 }
 
@@ -29,17 +27,13 @@ async function dispararInstalacion() {
   }
   promptInstalacionDiferido.prompt();
   const resultado = await promptInstalacionDiferido.userChoice;
-  if (resultado.outcome === 'accepted') {
-    mostrarSnackbar('Escudo Andino instalado ✔️');
-  }
+  if (resultado.outcome === 'accepted') mostrarSnackbar('Escudo Andino instalado ✔️');
   promptInstalacionDiferido = null;
   btnInstalarTop.style.display = 'none';
   installCard.style.display = 'none';
 }
-
 btnInstalarTop.addEventListener('click', dispararInstalacion);
 btnInstalarCard.addEventListener('click', dispararInstalacion);
-
 window.addEventListener('appinstalled', () => {
   btnInstalarTop.style.display = 'none';
   installCard.style.display = 'none';
@@ -55,7 +49,6 @@ function irA(nombre) {
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => irA(btn.dataset.screen));
 });
@@ -63,23 +56,109 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 /* ---------- Tema claro / oscuro ---------- */
 const btnTema = document.getElementById('btnTema');
 btnTema.addEventListener('click', () => {
-  const body = document.body;
-  const nuevo = body.dataset.theme === 'light' ? 'dark' : 'light';
-  body.dataset.theme = nuevo;
+  const nuevo = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+  document.body.dataset.theme = nuevo;
   localStorage.setItem('escudoAndino_tema', nuevo);
 });
 (function cargarTema() {
-  const temaGuardado = localStorage.getItem('escudoAndino_tema');
-  if (temaGuardado) document.body.dataset.theme = temaGuardado;
+  const t = localStorage.getItem('escudoAndino_tema');
+  if (t) document.body.dataset.theme = t;
 })();
 
-/* ---------- Snackbar (Material) ---------- */
+/* ---------- Snackbar ---------- */
 function mostrarSnackbar(mensaje) {
   const sb = document.getElementById('snackbar');
   sb.textContent = mensaje;
   sb.classList.add('mostrar');
   setTimeout(() => sb.classList.remove('mostrar'), 3200);
 }
+
+/* =====================================================================
+   SEGMENTACIÓN FREE / PRO
+   ===================================================================== */
+const CLAVE_PRO = 'escudoAndino_pro';
+const CODIGO_PRO_DEMO = 'ESCUDO2026';
+const LIMITE_HISTORIAL_FREE = 5;
+
+function esProUsuario() {
+  return localStorage.getItem(CLAVE_PRO) === 'true';
+}
+
+function actualizarUIPlan() {
+  const pro = esProUsuario();
+  const chip = document.getElementById('chipPlanActual');
+  chip.textContent = pro ? 'Plan Pro ⭐' : 'Plan Free';
+  document.getElementById('avisoPerfilesFree').style.display = pro ? 'none' : 'block';
+  document.getElementById('avisoHistorialFree').style.display = pro ? 'none' : 'block';
+  document.getElementById('btnNuevoPerfil').disabled = !pro;
+  document.getElementById('btnExportarCSV').style.opacity = pro ? '1' : '0.5';
+  renderizarHistorial();
+}
+
+document.getElementById('btnActivarPro').addEventListener('click', () => {
+  const codigo = document.getElementById('inputCodigoPro').value.trim().toUpperCase();
+  if (codigo === CODIGO_PRO_DEMO) {
+    localStorage.setItem(CLAVE_PRO, 'true');
+    actualizarUIPlan();
+    mostrarSnackbar('¡Plan Pro activado! ⭐ Ahora tienes historial ilimitado, exportación y perfiles múltiples.');
+  } else {
+    mostrarSnackbar('Código no válido. Verifica el código de demostración.');
+  }
+});
+document.getElementById('btnDesactivarPro').addEventListener('click', () => {
+  localStorage.setItem(CLAVE_PRO, 'false');
+  actualizarUIPlan();
+  mostrarSnackbar('Has vuelto al plan Free');
+});
+
+/* =====================================================================
+   PERFILES (multi-usuario, exclusivo Pro; Free usa un único perfil fijo)
+   ===================================================================== */
+const CLAVE_PERFILES = 'escudoAndino_perfiles';
+const CLAVE_PERFIL_ACTIVO = 'escudoAndino_perfilActivo';
+
+function obtenerPerfiles() {
+  const guardado = JSON.parse(localStorage.getItem(CLAVE_PERFILES) || 'null');
+  return guardado && guardado.length ? guardado : ['Predeterminado'];
+}
+function guardarPerfiles(lista) {
+  localStorage.setItem(CLAVE_PERFILES, JSON.stringify(lista));
+}
+function obtenerPerfilActivo() {
+  return localStorage.getItem(CLAVE_PERFIL_ACTIVO) || 'Predeterminado';
+}
+function establecerPerfilActivo(nombre) {
+  localStorage.setItem(CLAVE_PERFIL_ACTIVO, nombre);
+}
+
+function renderizarSelectorPerfiles() {
+  const select = document.getElementById('selectorPerfil');
+  const perfiles = esProUsuario() ? obtenerPerfiles() : ['Predeterminado'];
+  select.innerHTML = perfiles.map(p => `<option value="${p}">${p}</option>`).join('');
+  select.value = perfiles.includes(obtenerPerfilActivo()) ? obtenerPerfilActivo() : perfiles[0];
+}
+
+document.getElementById('selectorPerfil').addEventListener('change', (e) => {
+  establecerPerfilActivo(e.target.value);
+  renderizarHistorial();
+});
+
+document.getElementById('btnNuevoPerfil').addEventListener('click', () => {
+  if (!esProUsuario()) {
+    mostrarSnackbar('🔒 Los perfiles múltiples son una función Pro. Ve a "Planes" para activarla.');
+    return;
+  }
+  const nombre = prompt('Nombre del nuevo perfil (ej. nombre del trabajador o cliente):');
+  if (nombre && nombre.trim()) {
+    const perfiles = obtenerPerfiles();
+    perfiles.push(nombre.trim());
+    guardarPerfiles(perfiles);
+    establecerPerfilActivo(nombre.trim());
+    renderizarSelectorPerfiles();
+    renderizarHistorial();
+    mostrarSnackbar(`Perfil "${nombre.trim()}" creado`);
+  }
+});
 
 /* ---------- Selección de tipo de piel (chips) ---------- */
 let pielSeleccionada = null;
@@ -164,7 +243,6 @@ function iniciarCicloAlertas(duracionMs) {
   alertaReaplicacion.style.display = 'none';
   let restante = duracionMs;
   actualizarTimer(restante);
-
   intervaloRegresivo = setInterval(() => {
     restante -= 1000;
     if (restante <= 0) {
@@ -175,7 +253,6 @@ function iniciarCicloAlertas(duracionMs) {
     actualizarTimer(restante);
   }, 1000);
 }
-
 function actualizarTimer(ms) {
   const totalSeg = Math.max(0, Math.floor(ms / 1000));
   const h = String(Math.floor(totalSeg / 3600)).padStart(2, '0');
@@ -183,26 +260,29 @@ function actualizarTimer(ms) {
   const s = String(totalSeg % 60).padStart(2, '0');
   tiempoRestanteEl.textContent = `${h}:${m}:${s}`;
 }
-
 document.getElementById('btnIniciarAlertas').addEventListener('click', () => {
   iniciarCicloAlertas(ciclosMs);
   mostrarSnackbar('Recordatorios activados');
 });
-
 document.getElementById('modoDemo').addEventListener('click', () => {
   iniciarCicloAlertas(10000);
   mostrarSnackbar('Modo demostración: alerta en 10 segundos');
 });
 
-/* ---------- Seguimiento de uso (localStorage) ---------- */
-const CLAVE_HISTORIAL = 'escudoAndino_historial';
-
-function obtenerHistorial() {
-  return JSON.parse(localStorage.getItem(CLAVE_HISTORIAL) || '[]');
+/* =====================================================================
+   SEGUIMIENTO DE USO (localStorage, por perfil)
+   ===================================================================== */
+function claveHistorial(perfil) {
+  return `escudoAndino_historial__${perfil}`;
 }
 
+function obtenerHistorial() {
+  const perfil = esProUsuario() ? obtenerPerfilActivo() : 'Predeterminado';
+  return JSON.parse(localStorage.getItem(claveHistorial(perfil)) || '[]');
+}
 function guardarHistorial(historial) {
-  localStorage.setItem(CLAVE_HISTORIAL, JSON.stringify(historial));
+  const perfil = esProUsuario() ? obtenerPerfilActivo() : 'Predeterminado';
+  localStorage.setItem(claveHistorial(perfil), JSON.stringify(historial));
 }
 
 function registrarAplicacion(gramos = 1.5) {
@@ -214,24 +294,23 @@ function registrarAplicacion(gramos = 1.5) {
 }
 
 function renderizarHistorial() {
-  const historial = obtenerHistorial();
+  const historialCompleto = obtenerHistorial();
+  const pro = esProUsuario();
+  const historialVisible = pro ? historialCompleto : historialCompleto.slice(0, LIMITE_HISTORIAL_FREE);
+
   const lista = document.getElementById('historialLista');
-  const statTotal = document.getElementById('statTotal');
-  const statGramos = document.getElementById('statGramos');
-  const statDias = document.getElementById('statDias');
+  document.getElementById('statTotal').textContent = historialCompleto.length;
+  const totalGramos = historialCompleto.reduce((acc, h) => acc + (h.gramos || 1.5), 0);
+  document.getElementById('statGramos').textContent = totalGramos.toFixed(1) + ' g';
+  const diasUnicos = new Set(historialCompleto.map(h => h.fecha.slice(0, 10)));
+  document.getElementById('statDias').textContent = diasUnicos.size;
 
-  statTotal.textContent = historial.length;
-  const totalGramos = historial.reduce((acc, h) => acc + (h.gramos || 1.5), 0);
-  statGramos.textContent = totalGramos.toFixed(1) + ' g';
-  const diasUnicos = new Set(historial.map(h => h.fecha.slice(0, 10)));
-  statDias.textContent = diasUnicos.size;
-
-  if (historial.length === 0) {
+  if (historialVisible.length === 0) {
     lista.innerHTML = '<li class="historial-vacio">Aún no has registrado aplicaciones. Ve a "Recomendación" y usa "Registrar aplicación ahora".</li>';
     return;
   }
 
-  lista.innerHTML = historial.slice(0, 25).map(h => {
+  lista.innerHTML = historialVisible.map(h => {
     const f = new Date(h.fecha);
     const fechaStr = f.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' });
     const horaStr = f.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
@@ -245,11 +324,40 @@ document.getElementById('fabRegistro').addEventListener('click', () => {
   irA('seguimiento');
 });
 document.getElementById('btnLimpiarHistorial').addEventListener('click', () => {
-  if (confirm('¿Borrar todo el historial de aplicaciones?')) {
+  if (confirm('¿Borrar todo el historial de aplicaciones de este perfil?')) {
     guardarHistorial([]);
     renderizarHistorial();
     mostrarSnackbar('Historial borrado');
   }
+});
+
+/* ---------- Exportación CSV (Pro) ---------- */
+document.getElementById('btnExportarCSV').addEventListener('click', () => {
+  if (!esProUsuario()) {
+    mostrarSnackbar('🔒 La exportación a CSV es una función Pro. Ve a "Planes" para activarla.');
+    return;
+  }
+  const historial = obtenerHistorial();
+  if (historial.length === 0) {
+    mostrarSnackbar('No hay registros para exportar');
+    return;
+  }
+  const perfil = obtenerPerfilActivo();
+  let csv = 'Fecha,Hora,Gramos aplicados\n';
+  historial.forEach(h => {
+    const f = new Date(h.fecha);
+    csv += `${f.toLocaleDateString('es-PE')},${f.toLocaleTimeString('es-PE')},${(h.gramos || 1.5).toFixed(1)}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement('a');
+  enlace.href = url;
+  enlace.download = `escudo-andino-historial-${perfil}.csv`;
+  document.body.appendChild(enlace);
+  enlace.click();
+  document.body.removeChild(enlace);
+  URL.revokeObjectURL(url);
+  mostrarSnackbar('Historial exportado como CSV ✔️');
 });
 
 /* ---------- Calculadora de dosis ---------- */
@@ -258,12 +366,12 @@ document.getElementById('btnCalcular').addEventListener('click', () => {
   let total = 0;
   checks.forEach(c => total += parseFloat(c.value));
   if (total === 0) total = 1.5;
-
   document.getElementById('numeroGramos').textContent = total.toFixed(1) + ' g';
-  const envasesJornada = Math.ceil((total * 4) / 12); // 4 aplicaciones estimadas por jornada de 8h
+  const envasesJornada = Math.ceil((total * 4) / 12);
   document.getElementById('numeroEnvases').textContent = envasesJornada;
   document.getElementById('resultadoCalculo').style.display = 'block';
 });
 
 /* ---------- Inicialización ---------- */
-renderizarHistorial();
+renderizarSelectorPerfiles();
+actualizarUIPlan();
