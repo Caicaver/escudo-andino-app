@@ -1,5 +1,5 @@
 /* Escudo Andino — Service Worker mínimo (habilita instalación PWA y uso básico offline) */
-const CACHE_NAME = 'escudo-andino-cache-v3';
+const CACHE_NAME = 'escudo-andino-cache-v5';
 const ARCHIVOS_CACHE = [
   './',
   './index.html',
@@ -31,6 +31,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // El Worker del chatbot (dominio distinto, workers.dev) NO debe pasar por
+  // este caché; así el chat con Gemini siempre recibe respuestas frescas.
+  if (event.request.url.includes('workers.dev')) {
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then((respuestaCache) => {
       if (respuestaCache) return respuestaCache;
