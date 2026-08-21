@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escudo Andino | App de Fotoprotección Inteligente</title>
+
+<!-- PWA: manifest, favicon e íconos de instalación -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="https://www.dropbox.com/scl/fi/og5b8w96x05173ug1o1jq/Escudo_Andino_SF-1.png?rlkey=xg8y8h9k2ubw11ic513a6gir2&st=f1kjghls&raw=1">
+<link rel="apple-touch-icon" href="https://www.dropbox.com/scl/fi/og5b8w96x05173ug1o1jq/Escudo_Andino_SF-1.png?rlkey=xg8y8h9k2ubw11ic513a6gir2&st=f1kjghls&raw=1">
+<meta name="theme-color" content="#4A6B3D">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="light">
+
+<!-- TOP APP BAR (Material 3) -->
+<header class="topbar">
+  <div class="topbar-content">
+    <img src="https://www.dropbox.com/scl/fi/ynzqoyu3alwasip5diljl/Escudo_Andino_SF.png?rlkey=mx598597ydyidjs5kl8fg48we&st=6lj4ucuo&raw=1" alt="Escudo Andino" class="logo-topbar">
+    <div class="topbar-titles">
+      <span class="topbar-title">Escudo Andino</span>
+      <span class="topbar-subtitle">Fotoprotección andina inteligente</span>
+    </div>
+    <button class="icon-btn" id="btnInstalar" aria-label="Instalar app" title="Instalar aplicación" style="display:none;">
+      <span class="material-icon">⬇️</span>
+    </button>
+    <button class="icon-btn" id="btnTema" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro">
+      <span class="material-icon">🌗</span>
+    </button>
+  </div>
+</header>
+
+<main class="app-container">
+
+  <!-- ============ PANTALLA: INICIO ============ -->
+  <section class="screen" id="screen-inicio">
+
+    <div class="card install-card" id="installCard" style="display:none;">
+      <div class="install-icon">📲</div>
+      <div class="install-texto">
+        <strong>Instala Escudo Andino en tu celular</strong>
+        <p>Accede sin conexión y con un ícono directo en tu pantalla de inicio.</p>
+      </div>
+      <button class="btn-tonal" id="btnInstalarCard">Instalar</button>
+    </div>
+
+    <div class="hero-card">
+      <img src="https://www.dropbox.com/scl/fi/gb3y5dqdoxk0rwh21bitj/Escudo_Andino_cF.png?rlkey=0s8kn2hkuavnnx3lf8fijw5op&st=t86r1kr8&raw=1" alt="Escudo Andino" class="hero-logo">
+      <h1 class="hero-title">Protección solar con raíces andinas</h1>
+      <p class="hero-text">Formulado con óxido de zinc, sábila y moringa. Impulsado por inteligencia artificial para acompañarte en cada aplicación.</p>
+    </div>
+
+    <div class="grid-cards">
+      <div class="mini-card" onclick="irA('recomendacion')">
+        <span class="mini-icon">🧴</span>
+        <span class="mini-label">Recomendación</span>
+      </div>
+      <div class="mini-card" onclick="irA('seguimiento')">
+        <span class="mini-icon">📊</span>
+        <span class="mini-label">Seguimiento</span>
+      </div>
+      <div class="mini-card" onclick="irA('calculadora')">
+        <span class="mini-icon">🧮</span>
+        <span class="mini-label">Calculadora</span>
+      </div>
+      <div class="mini-card" onclick="irA('consejos')">
+        <span class="mini-icon">💡</span>
+        <span class="mini-label">Consejos UV</span>
+      </div>
+    </div>
+
+    <div class="card advertencia-card">
+      <div class="advertencia-icono">⚠️</div>
+      <div>
+        <strong>Prototipo experimental</strong>
+        <p>El FPS de Escudo Andino aún no está certificado en laboratorio. Combina siempre su uso con sombra, ropa de manga larga y sombrero.</p>
+      </div>
+    </div>
+
+    <div class="card roadmap-card">
+      <span class="chip chip-proximamente">Próximamente</span>
+      <h3>Análisis de piel por fotografía</h3>
+      <p>Estamos desarrollando un módulo que analizará el tono de piel a partir de una foto para afinar aún más la recomendación. Forma parte de nuestra hoja de ruta de mejora continua.</p>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA: RECOMENDACIÓN ============ -->
+  <section class="screen hidden" id="screen-recomendacion">
+    <h2 class="screen-title">Recomendación personalizada</h2>
+
+    <div class="card">
+      <label class="field-label">Tipo de piel</label>
+      <div class="chip-group" id="chipsPiel">
+        <button class="chip chip-select" data-piel="clara">Clara</button>
+        <button class="chip chip-select" data-piel="media">Media</button>
+        <button class="chip chip-select" data-piel="oscura">Oscura</button>
+      </div>
+
+      <label class="field-label" for="rangoHoras">Horas estimadas de exposición: <span id="valorHoras">6</span> h</label>
+      <input type="range" id="rangoHoras" min="1" max="12" step="0.5" value="6" class="slider">
+
+      <label class="field-label" for="actividad">Tipo de actividad</label>
+      <select id="actividad" class="select-md">
+        <option value="agricola">Trabajo agrícola / campo abierto</option>
+        <option value="mercado">Venta ambulante / mercado</option>
+        <option value="recreativa">Actividad recreativa al aire libre</option>
+      </select>
+
+      <button class="btn-filled" id="btnRecomendar">Generar recomendación</button>
+    </div>
+
+    <div class="card" id="resultadoRec" style="display:none;">
+      <span class="chip" id="badgeRiesgo"></span>
+      <div id="listaRecomendaciones"></div>
+
+      <div class="timer-card">
+        <span class="timer-label">⏰ Próxima reaplicación en</span>
+        <span class="timer-valor" id="tiempoRestante">--:--:--</span>
+      </div>
+
+      <div class="snackbar-alerta" id="alertaReaplicacion">🔔 ¡Es momento de reaplicar tu Escudo Andino!</div>
+
+      <div class="btn-row">
+        <button class="btn-tonal" id="btnIniciarAlertas">Activar recordatorios</button>
+        <button class="btn-text" id="btnRegistrarUso">+ Registrar aplicación ahora</button>
+      </div>
+      <p class="modo-demo" id="modoDemo">Modo demostración (feria): probar alerta en 10 s</p>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA: SEGUIMIENTO ============ -->
+  <section class="screen hidden" id="screen-seguimiento">
+    <h2 class="screen-title">Seguimiento de uso</h2>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-num" id="statTotal">0</span>
+        <span class="stat-label">Aplicaciones registradas</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="statGramos">0 g</span>
+        <span class="stat-label">Producto usado (est.)</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="statDias">0</span>
+        <span class="stat-label">Días de uso registrados</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header-row">
+        <h3>Historial</h3>
+        <button class="btn-text" id="btnLimpiarHistorial">Borrar historial</button>
+      </div>
+      <ul class="historial-lista" id="historialLista">
+        <li class="historial-vacio">Aún no has registrado aplicaciones. Ve a "Recomendación" y usa "Registrar aplicación ahora".</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA: CALCULADORA ============ -->
+  <section class="screen hidden" id="screen-calculadora">
+    <h2 class="screen-title">Calculadora de dosis</h2>
+    <div class="card">
+      <p class="card-desc">Estima cuánto producto necesitas según las zonas de tu cuerpo que quedarán expuestas al sol.</p>
+
+      <div class="checklist" id="zonasCorporales">
+        <label class="checklist-item"><input type="checkbox" value="1.5" checked> Rostro y cuello (1.5 g)</label>
+        <label class="checklist-item"><input type="checkbox" value="1" checked> Brazos (1 g c/u)</label>
+        <label class="checklist-item"><input type="checkbox" value="1"> Manos (0.5 g c/u)</label>
+        <label class="checklist-item"><input type="checkbox" value="2"> Piernas (2 g c/u)</label>
+        <label class="checklist-item"><input type="checkbox" value="1.5"> Espalda / nuca (1.5 g)</label>
+      </div>
+
+      <button class="btn-filled" id="btnCalcular">Calcular dosis</button>
+
+      <div class="resultado-calculo" id="resultadoCalculo" style="display:none;">
+        <span class="calculo-numero" id="numeroGramos">0 g</span>
+        <span class="calculo-texto">por aplicación → aproximadamente <strong id="numeroEnvases">0</strong> envases de 12 g te durarán toda la jornada con reaplicaciones.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA: CONSEJOS ============ -->
+  <section class="screen hidden" id="screen-consejos">
+    <h2 class="screen-title">Consejos y educación solar</h2>
+
+    <details class="accordion" open>
+      <summary>🕶️ Buenas prácticas de aplicación</summary>
+      <ul class="tips-list">
+        <li>Aplica una capa generosa 15-20 minutos antes de la exposición solar.</li>
+        <li>Reaplica después de sudar en exceso, aunque no haya sonado la alerta.</li>
+        <li>Combina siempre con sombra, sombrero de ala ancha y ropa de manga larga entre las 10 a.m. y 4 p.m.</li>
+      </ul>
+    </details>
+
+    <details class="accordion">
+      <summary>☀️ Escala de índice UV (referencia educativa)</summary>
+      <ul class="tips-list">
+        <li><strong>1-2 (Bajo):</strong> riesgo mínimo, protección básica recomendada.</li>
+        <li><strong>3-5 (Moderado):</strong> usar sombrero, gafas y protector.</li>
+        <li><strong>6-7 (Alto):</strong> reducir exposición al mediodía, reaplicar con frecuencia.</li>
+        <li><strong>8-10 (Muy alto):</strong> evitar exposición prolongada sin sombra.</li>
+        <li><strong>11+ (Extremo):</strong> exposición peligrosa; máxima protección obligatoria.</li>
+      </ul>
+    </details>
+
+    <details class="accordion">
+      <summary>🩺 ¿Por qué es importante la fotoprotección?</summary>
+      <p class="tips-text">El Perú registra alta radiación UV y un número creciente de casos de cáncer de piel (INEN, 2026). Los trabajadores agrícolas, expuestos hasta 8 horas diarias sin protección, enfrentan un riesgo especialmente alto (The Skin Cancer Foundation, 2024a). La Ley N.° 30102 dispone medidas preventivas frente a la exposición prolongada a la radiación solar en el Perú.</p>
+    </details>
+
+    <details class="accordion">
+      <summary>🌿 Sobre los ingredientes de Escudo Andino</summary>
+      <ul class="tips-list">
+        <li><strong>Óxido de zinc (18%):</strong> filtro físico de amplio espectro UVA/UVB, la protección real del producto.</li>
+        <li><strong>Sábila (30%):</strong> hidrata y calma la piel.</li>
+        <li><strong>Extracto de moringa (12%):</strong> antioxidantes que ayudan frente al estrés oxidativo solar.</li>
+        <li><strong>Base de consistencia (35%):</strong> cera de abeja natural, mantequilla de cacao y vaselina — dan cuerpo y resistencia al sudor.</li>
+      </ul>
+    </details>
+
+    <details class="accordion">
+      <summary>⚠️ Advertencia importante</summary>
+      <p class="tips-text">Escudo Andino es un prototipo experimental de tamizaje social. No garantiza un FPS certificado ni reemplaza a un protector probado. Realiza siempre una prueba de sensibilidad en el antebrazo 24 horas antes del primer uso.</p>
+    </details>
+  </section>
+
+  <!-- ============ PANTALLA: ACERCA DE ============ -->
+  <section class="screen hidden" id="screen-acerca">
+    <h2 class="screen-title">Acerca del proyecto</h2>
+    <div class="card acerca-card">
+      <img src="https://www.dropbox.com/scl/fi/gb3y5dqdoxk0rwh21bitj/Escudo_Andino_cF.png?rlkey=0s8kn2hkuavnnx3lf8fijw5op&st=t86r1kr8&raw=1" alt="Escudo Andino" class="acerca-logo">
+      <h3>Escudo Andino</h3>
+      <p class="card-desc">Proyecto de emprendimiento tecnológico y social — I.E. Santa Rita de Jesús, Trujillo.</p>
+      <p class="card-desc"><strong>Grado:</strong> 4.° "B" &nbsp;|&nbsp; <strong>Área:</strong> Educación para el Trabajo</p>
+      <p class="card-desc"><strong>Docente asesor:</strong> Calet Isai Cáceres Vergara</p>
+      <p class="card-desc"><strong>Herramientas de IA:</strong> Claude (formulación y app) · ChatGPT (etiquetado y material educativo)</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- CRÉDITOS INSTITUCIONALES -->
+<footer class="creditos">
+  <p>Escudo Andino · Institución Educativa Santa Rita de Jesús · 2026</p>
+  <p>4B - Equipo EPT | Asesor: Mg. Calet Cáceres Vergara</p>
+</footer>
+
+<!-- FAB -->
+<button class="fab" id="fabRegistro" title="Registrar aplicación rápida">+</button>
+
+<!-- BOTTOM NAVIGATION (Material 3) -->
+<nav class="bottomnav">
+  <button class="nav-item active" data-screen="inicio">
+    <span class="nav-icon">🏠</span><span class="nav-label">Inicio</span>
+  </button>
+  <button class="nav-item" data-screen="recomendacion">
+    <span class="nav-icon">🧴</span><span class="nav-label">Recomendación</span>
+  </button>
+  <button class="nav-item" data-screen="seguimiento">
+    <span class="nav-icon">📊</span><span class="nav-label">Seguimiento</span>
+  </button>
+  <button class="nav-item" data-screen="consejos">
+    <span class="nav-icon">💡</span><span class="nav-label">Consejos</span>
+  </button>
+  <button class="nav-item" data-screen="acerca">
+    <span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span>
+  </button>
+</nav>
+
+<div class="snackbar" id="snackbar"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

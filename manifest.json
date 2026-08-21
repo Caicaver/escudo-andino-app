@@ -1,0 +1,32 @@
+{
+  "name": "Escudo Andino - Fotoprotección Inteligente",
+  "short_name": "Escudo Andino",
+  "description": "App de recomendaciones de fotoprotección con óxido de zinc, sábila y moringa. Proyecto I.E. Santa Rita de Jesús.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFBF5",
+  "theme_color": "#4A6B3D",
+  "lang": "es-PE",
+  "icons": [
+    {
+      "src": "https://www.dropbox.com/scl/fi/og5b8w96x05173ug1o1jq/Escudo_Andino_SF-1.png?rlkey=xg8y8h9k2ubw11ic513a6gir2&st=f1kjghls&raw=1",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://www.dropbox.com/scl/fi/og5b8w96x05173ug1o1jq/Escudo_Andino_SF-1.png?rlkey=xg8y8h9k2ubw11ic513a6gir2&st=f1kjghls&raw=1",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://www.dropbox.com/scl/fi/og5b8w96x05173ug1o1jq/Escudo_Andino_SF-1.png?rlkey=xg8y8h9k2ubw11ic513a6gir2&st=f1kjghls&raw=1",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
