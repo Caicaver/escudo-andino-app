@@ -31,11 +31,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // El Worker del chatbot (dominio distinto, workers.dev) NO debe pasar por
-  // este caché; así el chat con Gemini siempre recibe respuestas frescas.
-  if (event.request.url.includes('workers.dev')) {
-    return;
-  }
   event.respondWith(
     caches.match(event.request).then((respuestaCache) => {
       if (respuestaCache) return respuestaCache;

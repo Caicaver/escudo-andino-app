@@ -27,7 +27,7 @@
       <span class="topbar-subtitle">Fotoprotección andina inteligente</span>
     </div>
     <button class="icon-btn" id="btnInstalar" aria-label="Instalar app" title="Instalar aplicación" style="display:none;">
-      <span class="material-icon">↓</span>
+      <span class="material-icon">⬇️</span>
     </button>
     <button class="icon-btn" id="btnTema" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro">
       <span class="material-icon">🌗</span>
@@ -52,16 +52,11 @@
     <div class="hero-card">
       <img src="./img/escudo-cf.png" alt="Escudo Andino" class="hero-logo">
       <h1 class="hero-title">Protección solar con raíces andinas</h1>
-      <p class="hero-text">Formulado con óxido de zinc, sábila y moringa. Impulsado por inteligencia artificial para acompañarte en cada aplicación.</p>
+      <p class="hero-text">Formulado con óxido de zinc, sábila y moringa. Impulsado por inteligencia artificial durante su formulación para acompañarte en cada aplicación.</p>
       <div class="plan-status-row">
         <span class="chip plan-chip" id="chipPlanActual">Plan Free</span>
         <button class="link-salir-pro" id="btnSalirProInicio" style="display:none;">Salir de Pro</button>
       </div>
-    </div>
-
-    <!-- Advertencia compacta (siempre visible, sin ocupar tanto espacio) -->
-    <div class="advertencia-compacta">
-      ⚠️ <strong>Prototipo experimental:</strong> FPS no certificado. Combina siempre con sombra, ropa y sombrero.
     </div>
 
     <!-- CATEGORÍA 1: Herramientas de uso diario -->
@@ -85,17 +80,16 @@
       </div>
     </div>
 
-    <!-- CATEGORÍA 2: Cuenta y asistencia -->
-    <p class="grid-section-label">Cuenta y asistencia IA</p>
+    <!-- CATEGORÍA 2: Cuenta y ayuda -->
+    <p class="grid-section-label">Cuenta y ayuda</p>
     <div class="grid-cards grid-cards-secundaria">
       <div class="mini-card mini-card-pro" onclick="irA('planes')">
         <span class="mini-icon">⭐</span>
         <span class="mini-label">Planes</span>
       </div>
-      <div class="mini-card" onclick="abrirChat()">
-        <span class="mini-card-badge-gemini">Gemini</span>
-        <span class="mini-icon">💬</span>
-        <span class="mini-label">Asistente IA</span>
+      <div class="mini-card" onclick="irA('faq')">
+        <span class="mini-icon">🔎</span>
+        <span class="mini-label">Preguntas frecuentes</span>
       </div>
       <div class="mini-card" onclick="irA('acerca')">
         <span class="mini-icon">ℹ️</span>
@@ -103,17 +97,18 @@
       </div>
     </div>
 
-    <!-- Hoja de ruta consolidada (antes eran 2 tarjetas separadas) -->
-    <p class="grid-section-label">Novedades y hoja de ruta</p>
-    <div class="card roadmap-card-consolidada">
-      <div class="roadmap-item">
-        <span class="chip chip-proximamente">Próximamente</span>
-        <p>Análisis de piel por fotografía para afinar aún más la recomendación (disponible en el plan Pro).</p>
+    <div class="card advertencia-card">
+      <div class="advertencia-icono">⚠️</div>
+      <div>
+        <strong>Prototipo experimental</strong>
+        <p>El FPS de Escudo Andino aún no está certificado en laboratorio. Combina siempre su uso con sombra, ropa de manga larga y sombrero.</p>
       </div>
-      <div class="roadmap-item">
-        <span class="chip-gemini">⚡ Activo en Pro</span>
-        <p>Asistente conversacional con IA generativa (Gemini), conectado mediante un servidor seguro.</p>
-      </div>
+    </div>
+
+    <div class="card roadmap-card">
+      <span class="chip chip-proximamente">PRO · Próximamente</span>
+      <h3>Análisis de piel por fotografía</h3>
+      <p>Estamos desarrollando un módulo que analizará el tono de piel a partir de una foto para afinar aún más la recomendación. Estará disponible para usuarios del plan Pro como parte de nuestra hoja de ruta.</p>
     </div>
   </section>
 
@@ -272,6 +267,16 @@
     </details>
   </section>
 
+  <!-- ============ PANTALLA: PREGUNTAS FRECUENTES (reemplaza al chatbot) ============ -->
+  <section class="screen hidden" id="screen-faq">
+    <h2 class="screen-title">Preguntas frecuentes</h2>
+    <div class="card">
+      <p class="card-desc">Escribe una palabra clave (por ejemplo "precio", "reaplicar" o "ingredientes") para encontrar tu respuesta al instante, sin conexión a internet.</p>
+      <input type="text" id="buscadorFaq" class="select-md" placeholder="Buscar pregunta...">
+    </div>
+    <div id="listaFaq"></div>
+  </section>
+
   <!-- ============ PANTALLA: PLANES (FREE / PRO) ============ -->
   <section class="screen hidden" id="screen-planes">
     <h2 class="screen-title">Planes Escudo Andino</h2>
@@ -286,12 +291,11 @@
           <li>✅ Alertas de reaplicación</li>
           <li>✅ Consejos y educación solar</li>
           <li>✅ Calculadora de dosis</li>
-          <li>✅ Asistente conversacional básico</li>
+          <li>✅ Buscador de preguntas frecuentes</li>
           <li>✅ 1 perfil de usuario</li>
           <li>✅ Historial de los últimos 5 registros</li>
           <li>🔒 Exportación de historial</li>
           <li>🔒 Perfiles múltiples</li>
-          <li>🔒 Asistente IA generativo (Gemini)</li>
           <li>🔒 Análisis de piel por foto</li>
         </ul>
       </div>
@@ -304,7 +308,6 @@
           <li>✅ Historial ilimitado</li>
           <li>✅ Exportación a CSV</li>
           <li>✅ Perfiles múltiples (varios trabajadores)</li>
-          <li>✅ <span class="chip-gemini" style="font-size:0.68rem; padding:3px 9px;">⚡ Gemini</span> Asistente IA generativo — activo</li>
           <li>✅ Acceso prioritario al análisis de piel por foto</li>
           <li>✅ Reportes de uso para supervisores</li>
         </ul>
@@ -331,7 +334,7 @@
       <p class="card-desc">Proyecto de emprendimiento tecnológico y social — I.E. Santa Rita de Jesús, Trujillo.</p>
       <p class="card-desc"><strong>Grado:</strong> 4.° "B" &nbsp;|&nbsp; <strong>Área:</strong> Educación para el Trabajo</p>
       <p class="card-desc"><strong>Docente asesor:</strong> Calet Isai Cáceres Vergara</p>
-      <p class="card-desc"><strong>Herramientas de IA:</strong> Claude (formulación de la fórmula) · Gemini (asistente conversacional Pro) · ChatGPT (etiquetado y material educativo)</p>
+      <p class="card-desc"><strong>Herramientas de IA:</strong> Claude (formulación de la fórmula) · ChatGPT (etiquetado y material educativo)</p>
     </div>
   </section>
 
@@ -345,9 +348,6 @@
 
 <!-- FAB registro -->
 <button class="fab" id="fabRegistro" title="Registrar aplicación rápida">+</button>
-
-<!-- FAB chatbot -->
-<button class="fab fab-chat" id="fabChat" title="Asistente Escudo Andino">💬</button>
 
 <!-- BOTTOM NAVIGATION (Material 3) -->
 <nav class="bottomnav">
@@ -367,33 +367,6 @@
     <span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span>
   </button>
 </nav>
-
-<!-- PANEL DEL CHATBOT (bottom sheet) -->
-<div class="chat-overlay" id="chatOverlay"></div>
-<div class="chat-panel" id="chatPanel">
-  <div class="chat-header">
-    <img src="./img/escudo-sf.png" alt="" class="chat-avatar">
-    <div class="chat-header-textos">
-      <strong>Asistente Escudo Andino <span class="chip-gemini" id="chipGeminiHeader" style="display:none;">⚡ Gemini</span></strong>
-      <span id="subtituloChat">Free: reglas · Pro: IA generativa (Gemini)</span>
-    </div>
-    <button class="icon-btn" id="btnCerrarChat">✕</button>
-  </div>
-
-  <div class="chat-sugerencias" id="chatSugerencias">
-    <button class="chip chip-sugerencia">¿Qué ingredientes tiene?</button>
-    <button class="chip chip-sugerencia">¿Cada cuánto reaplico?</button>
-    <button class="chip chip-sugerencia">¿Es seguro?</button>
-    <button class="chip chip-sugerencia">¿Cuánto cuesta?</button>
-  </div>
-
-  <div class="chat-mensajes" id="chatMensajes"></div>
-
-  <div class="chat-input-row">
-    <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." class="select-md">
-    <button class="icon-btn-outline chat-btn-enviar" id="btnEnviarChat">➤</button>
-  </div>
-</div>
 
 <div class="snackbar" id="snackbar"></div>
 

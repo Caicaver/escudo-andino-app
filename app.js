@@ -1,8 +1,5 @@
 /* ===================== Escudo Andino — Lógica de la app ===================== */
 
-/* ---------- CONFIGURACIÓN: URL de tu Worker (proxy de Gemini) ---------- */
-const URL_WORKER_CHATBOT = 'https://escudo-andino-chatbot.caicaver94.workers.dev';
-
 /* ---------- Registro del Service Worker ---------- */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -101,18 +98,8 @@ function actualizarUIPlan() {
   document.getElementById('btnNuevoPerfil').disabled = !pro;
   document.getElementById('btnExportarCSV').style.opacity = pro ? '1' : '0.5';
 
-  // Acceso rápido para salir de Pro, visible junto al chip de plan en Inicio
   const btnSalirProInicio = document.getElementById('btnSalirProInicio');
   if (btnSalirProInicio) btnSalirProInicio.style.display = pro ? 'inline-block' : 'none';
-
-  const chipGeminiHeader = document.getElementById('chipGeminiHeader');
-  const subtituloChat = document.getElementById('subtituloChat');
-  if (chipGeminiHeader) chipGeminiHeader.style.display = pro ? 'inline-flex' : 'none';
-  if (subtituloChat) {
-    subtituloChat.textContent = pro
-      ? 'Conectado a Gemini (IA generativa)'
-      : 'Free: reglas · Pro: IA generativa (Gemini)';
-  }
 
   renderizarHistorial();
 }
@@ -122,7 +109,7 @@ document.getElementById('btnActivarPro').addEventListener('click', () => {
   if (codigo === CODIGO_PRO_DEMO) {
     localStorage.setItem(CLAVE_PRO, 'true');
     actualizarUIPlan();
-    mostrarSnackbar('¡Plan Pro activado! ⭐ El asistente ahora usa IA generativa (Gemini).');
+    mostrarSnackbar('¡Plan Pro activado! ⭐');
   } else {
     mostrarSnackbar('Código no válido. Verifica el código de demostración.');
   }
@@ -369,180 +356,97 @@ document.getElementById('btnCalcular').addEventListener('click', () => {
 });
 
 /* =====================================================================
-   CHATBOT — Motor local (Free) basado en reglas
+   PREGUNTAS FRECUENTES — Buscador local (reemplaza al chatbot)
+   Funciona 100% sin conexión, sin API externa y sin límites de uso.
    ===================================================================== */
-const BASE_CONOCIMIENTO = [
+const BASE_FAQ = [
   {
-    intencion: 'ingredientes',
-    palabrasClave: ['ingrediente', 'ingredientes', 'compuesto', 'formula', 'fórmula', 'lleva', 'contiene', 'hecho'],
-    respuesta: 'Escudo Andino contiene: óxido de zinc (18%, filtro físico UVA/UVB), sábila (30%, hidratante), extracto de moringa (12%, antioxidante), y una base de consistencia (35%) con cera de abeja, mantequilla de cacao y vaselina, más 5% de aceite vegetal como vehículo. 🌿'
+    pregunta: '¿Qué ingredientes tiene Escudo Andino?',
+    respuesta: 'Óxido de zinc (18%, filtro físico UVA/UVB), sábila (30%, hidratante), extracto de moringa (12%, antioxidante), y una base de consistencia (35%) con cera de abeja, mantequilla de cacao y vaselina, más 5% de aceite vegetal como vehículo. 🌿',
+    palabrasClave: ['ingrediente', 'ingredientes', 'compuesto', 'formula', 'fórmula', 'lleva', 'contiene', 'hecho', 'zinc', 'sabila', 'moringa']
   },
   {
-    intencion: 'reaplicacion',
-    palabrasClave: ['reaplic', 'cada cuanto', 'cada cuánto', 'cuando aplico', 'frecuencia', 'horas'],
-    respuesta: 'La recomendación general es reaplicar cada 2 horas de exposición solar. Si tienes piel clara, lo ideal es cada 1.5 horas por mayor sensibilidad. Puedes obtener tu recomendación exacta en la sección "Recomendación" según tu tipo de piel. ⏰'
+    pregunta: '¿Cada cuánto debo reaplicarlo?',
+    respuesta: 'La recomendación general es reaplicar cada 2 horas de exposición solar. Si tienes piel clara, lo ideal es cada 1.5 horas por mayor sensibilidad. Obtén tu recomendación exacta en la sección "Recomendación" según tu tipo de piel. ⏰',
+    palabrasClave: ['reaplic', 'cada cuanto', 'cuando aplico', 'frecuencia', 'horas']
   },
   {
-    intencion: 'seguridad',
-    palabrasClave: ['seguro', 'seguridad', 'confiable', 'certificado', 'fps', 'proteccion', 'protección', 'garantiza'],
-    respuesta: '⚠️ Escudo Andino es un prototipo experimental. Su FPS (Factor de Protección Solar) aún no está certificado en laboratorio, por lo que no debe usarse como único medio de protección. Combínalo siempre con sombra, ropa de manga larga y sombrero.'
+    pregunta: '¿Es seguro usar Escudo Andino?',
+    respuesta: '⚠️ Es un prototipo experimental. Su FPS (Factor de Protección Solar) aún no está certificado en laboratorio, por lo que no debe usarse como único medio de protección. Combínalo siempre con sombra, ropa de manga larga y sombrero.',
+    palabrasClave: ['seguro', 'seguridad', 'confiable', 'certificado', 'fps', 'proteccion', 'garantiza']
   },
   {
-    intencion: 'sensibilidad',
-    palabrasClave: ['alergia', 'alergica', 'alérgica', 'reaccion', 'reacción', 'irritacion', 'prueba'],
-    respuesta: 'Antes de tu primer uso, realiza una prueba de sensibilidad: aplica una pequeña cantidad en el antebrazo y espera 24 horas. Si notas enrojecimiento, picazón o irritación, no continúes usando el producto. ✋'
+    pregunta: '¿Debo hacer alguna prueba antes de usarlo?',
+    respuesta: 'Sí: realiza una prueba de sensibilidad aplicando una pequeña cantidad en el antebrazo y espera 24 horas. Si notas enrojecimiento, picazón o irritación, no continúes usando el producto. ✋',
+    palabrasClave: ['alergia', 'alergica', 'reaccion', 'irritacion', 'prueba', 'sensibilidad']
   },
   {
-    intencion: 'precio',
-    palabrasClave: ['precio', 'cuesta', 'costo', 'comprar', 'venta', 'soles'],
-    respuesta: 'El precio estimado de venta es de S/ 8 a S/ 12 por envase de 12 g, con un costo de producción aproximado de S/ 6 por unidad. Se vende de forma directa en mercados de Trujillo y cooperativas agrícolas. 💰'
+    pregunta: '¿Cuánto cuesta Escudo Andino?',
+    respuesta: 'El precio estimado de venta es de S/ 8 a S/ 12 por envase de 12 g, con un costo de producción aproximado de S/ 6 por unidad. Se vende de forma directa en mercados de Trujillo y cooperativas agrícolas. 💰',
+    palabrasClave: ['precio', 'cuesta', 'costo', 'comprar', 'venta', 'soles']
   },
   {
-    intencion: 'ambiente',
-    palabrasClave: ['ambiente', 'ambiental', 'ecologico', 'ecológico', 'reciclable', 'sostenible', 'impacto'],
-    respuesta: 'Escudo Andino usa envases reciclables e ingredientes naturales y locales. Se recolectan las plantas de forma responsable para no agotar sus poblaciones, y se busca reducir progresivamente el uso de vaselina (derivado del petróleo) reemplazándola por ceras y mantecas vegetales. ♻️'
+    pregunta: '¿Qué impacto ambiental tiene?',
+    respuesta: 'Usa envases reciclables e ingredientes naturales y locales. Se recolectan las plantas de forma responsable para no agotar sus poblaciones, y se busca reducir progresivamente el uso de vaselina (derivado del petróleo) reemplazándola por ceras y mantecas vegetales. ♻️',
+    palabrasClave: ['ambiente', 'ambiental', 'ecologico', 'reciclable', 'sostenible', 'impacto']
   },
   {
-    intencion: 'equipo',
-    palabrasClave: ['equipo', 'quien hizo', 'quién hizo', 'estudiantes', 'autor', 'colegio', 'institucion', 'institución', 'asesor'],
-    respuesta: 'Escudo Andino es un proyecto de la I.E. Santa Rita de Jesús (Trujillo), desarrollado por el equipo de 4.° "B" en el área de Educación para el Trabajo, bajo la asesoría del Mg. Calet Isai Cáceres Vergara. 🎓'
+    pregunta: '¿Quién elaboró este proyecto?',
+    respuesta: 'Escudo Andino es un proyecto de la I.E. Santa Rita de Jesús (Trujillo), desarrollado por el equipo de 4.° "B" en el área de Educación para el Trabajo, bajo la asesoría del Mg. Calet Isai Cáceres Vergara. 🎓',
+    palabrasClave: ['equipo', 'quien hizo', 'estudiantes', 'autor', 'colegio', 'institucion', 'asesor']
   },
   {
-    intencion: 'ia_uso',
-    palabrasClave: ['inteligencia artificial', ' ia ', 'claude', 'gemini', 'chatgpt', 'como se hizo', 'cómo se hizo'],
-    respuesta: 'La inteligencia artificial se usó de tres formas: Claude ayudó a investigar y ajustar las proporciones de la fórmula, ChatGPT diseñó el etiquetado y material educativo, y Gemini potencia este asistente conversacional en el plan Pro. Cada sugerencia de IA fue validada con literatura científica antes de aplicarla. 🤖'
+    pregunta: '¿Cómo se usó la inteligencia artificial en este proyecto?',
+    respuesta: 'Claude ayudó a investigar y ajustar las proporciones de la fórmula (por ejemplo, el porcentaje de óxido de zinc), y ChatGPT se usó para el diseño del etiquetado y material educativo. Cada sugerencia de IA fue validada con literatura científica antes de aplicarla. 🤖',
+    palabrasClave: ['inteligencia artificial', 'ia', 'claude', 'chatgpt', 'como se hizo']
   },
   {
-    intencion: 'modo_uso',
-    palabrasClave: ['como aplico', 'cómo aplico', 'modo de uso', 'como usar', 'cómo usar', 'aplicar'],
-    respuesta: 'Aplica una capa generosa sobre piel limpia, 15-20 minutos antes de la exposición solar, y reaplica según la recomendación de tu tipo de piel. Combínalo siempre con sombra, ropa adecuada y sombrero. 🧴'
+    pregunta: '¿Cómo debo aplicar el producto?',
+    respuesta: 'Aplica una capa generosa sobre piel limpia, 15-20 minutos antes de la exposición solar, y reaplica según la recomendación de tu tipo de piel. Combínalo siempre con sombra, ropa adecuada y sombrero. 🧴',
+    palabrasClave: ['como aplico', 'modo de uso', 'como usar', 'aplicar']
   },
   {
-    intencion: 'planes',
-    palabrasClave: ['plan', 'pro', 'free', 'gratis', 'suscripcion', 'suscripción', 'pago'],
-    respuesta: 'La app tiene un plan Free con todas las funciones esenciales gratuitas, y un plan Pro (S/5/mes por grupo) con historial ilimitado, exportación de datos, perfiles múltiples y el asistente con IA generativa (Gemini). Puedes ver la comparación completa en la sección "Planes". ⭐'
+    pregunta: '¿Qué diferencia hay entre el plan Free y el plan Pro?',
+    respuesta: 'El plan Free incluye todas las funciones esenciales gratis. El plan Pro (S/5/mes por grupo) añade historial ilimitado, exportación de datos y perfiles múltiples, pensado para cooperativas. Revisa la comparación completa en "Planes". ⭐',
+    palabrasClave: ['plan', 'pro', 'free', 'gratis', 'suscripcion', 'pago']
   },
   {
-    intencion: 'app_funciones',
-    palabrasClave: ['app', 'aplicacion', 'aplicación', 'funciones', 'que hace', 'qué hace'],
-    respuesta: 'La app te ofrece: recomendaciones personalizadas por tipo de piel, alertas de reaplicación, una calculadora de dosis por zona corporal, seguimiento de tu historial de uso, y contenido educativo sobre radiación UV. 📱'
+    pregunta: '¿Qué funciones tiene la app?',
+    respuesta: 'Recomendaciones personalizadas por tipo de piel, alertas de reaplicación, una calculadora de dosis por zona corporal, seguimiento de tu historial de uso, y contenido educativo sobre radiación UV. 📱',
+    palabrasClave: ['app', 'aplicacion', 'funciones', 'que hace']
   }
 ];
-
-const RESPUESTA_SALUDO_FREE = '¡Hola! 👋 Soy el asistente de Escudo Andino (modo básico). Puedo responder preguntas sobre ingredientes, modo de uso, seguridad, precios o el equipo. Con el plan Pro, respondo con IA generativa real (Gemini). ¿En qué te ayudo?';
-const RESPUESTA_SALUDO_PRO = '¡Hola! 👋 Soy el asistente Pro de Escudo Andino, potenciado por IA generativa (Gemini). Pregúntame lo que quieras sobre el producto o la app.';
-const RESPUESTA_FALLBACK = 'No tengo una respuesta exacta para eso todavía 🤔 Puedes revisar la sección "Consejos", o preguntarme sobre ingredientes, reaplicación, seguridad, precio o el equipo del proyecto.';
 
 function normalizarTexto(texto) {
   return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-function motorChatbotLocal(mensajeUsuario) {
-  const textoNormalizado = normalizarTexto(mensajeUsuario);
-  let mejorCoincidencia = null;
-  let mejorPuntaje = 0;
+function renderizarFaq(filtro = '') {
+  const contenedor = document.getElementById('listaFaq');
+  const filtroNormalizado = normalizarTexto(filtro.trim());
 
-  BASE_CONOCIMIENTO.forEach(entrada => {
-    let puntaje = 0;
-    entrada.palabrasClave.forEach(palabra => {
-      if (textoNormalizado.includes(normalizarTexto(palabra))) puntaje++;
-    });
-    if (puntaje > mejorPuntaje) {
-      mejorPuntaje = puntaje;
-      mejorCoincidencia = entrada;
-    }
+  const resultados = BASE_FAQ.filter(item => {
+    if (!filtroNormalizado) return true;
+    const textoCompleto = normalizarTexto(item.pregunta + ' ' + item.respuesta + ' ' + item.palabrasClave.join(' '));
+    return textoCompleto.includes(filtroNormalizado);
   });
 
-  if (mejorCoincidencia && mejorPuntaje > 0) return mejorCoincidencia.respuesta;
-  return RESPUESTA_FALLBACK;
-}
-
-/* ---------- Llamada al Worker (IA generativa real vía Gemini, plan Pro) ---------- */
-async function consultarChatbotPro(mensajeUsuario) {
-  const respuesta = await fetch(URL_WORKER_CHATBOT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mensaje: mensajeUsuario }),
-  });
-
-  if (!respuesta.ok) {
-    throw new Error('El Worker respondió con estado ' + respuesta.status);
-  }
-
-  const datos = await respuesta.json();
-  if (datos.error) throw new Error(datos.error);
-  return datos.respuesta || RESPUESTA_FALLBACK;
-}
-
-/* ---------- UI del chat ---------- */
-const chatOverlay = document.getElementById('chatOverlay');
-const chatPanel = document.getElementById('chatPanel');
-const chatMensajes = document.getElementById('chatMensajes');
-const chatInput = document.getElementById('chatInput');
-
-function abrirChat() {
-  chatOverlay.classList.add('visible');
-  chatPanel.classList.add('abierto');
-  if (chatMensajes.children.length === 0) {
-    agregarMensajeBot(esProUsuario() ? RESPUESTA_SALUDO_PRO : RESPUESTA_SALUDO_FREE);
-  }
-}
-function cerrarChat() {
-  chatOverlay.classList.remove('visible');
-  chatPanel.classList.remove('abierto');
-}
-document.getElementById('fabChat').addEventListener('click', abrirChat);
-document.getElementById('btnCerrarChat').addEventListener('click', cerrarChat);
-chatOverlay.addEventListener('click', cerrarChat);
-
-function agregarMensajeUsuario(texto) {
-  const div = document.createElement('div');
-  div.className = 'mensaje mensaje-usuario';
-  div.textContent = texto;
-  chatMensajes.appendChild(div);
-  chatMensajes.scrollTop = chatMensajes.scrollHeight;
-}
-function agregarMensajeBot(texto, idTemporal = null) {
-  const div = document.createElement('div');
-  div.className = 'mensaje mensaje-bot';
-  div.textContent = texto;
-  if (idTemporal) div.dataset.temporal = idTemporal;
-  chatMensajes.appendChild(div);
-  chatMensajes.scrollTop = chatMensajes.scrollHeight;
-  return div;
-}
-
-async function enviarMensajeChat() {
-  const texto = chatInput.value.trim();
-  if (!texto) return;
-  agregarMensajeUsuario(texto);
-  chatInput.value = '';
-
-  const pro = esProUsuario();
-
-  if (!pro) {
-    setTimeout(() => agregarMensajeBot(motorChatbotLocal(texto)), 350);
+  if (resultados.length === 0) {
+    contenedor.innerHTML = '<p class="faq-vacio">No encontramos preguntas con esa palabra. Intenta con "ingredientes", "precio", "seguro" o "reaplicar".</p>';
     return;
   }
 
-  const burbujaEscribiendo = agregarMensajeBot('Escribiendo...', 'escribiendo');
-  try {
-    const respuestaIA = await consultarChatbotPro(texto);
-    burbujaEscribiendo.textContent = respuestaIA;
-  } catch (error) {
-    burbujaEscribiendo.textContent = motorChatbotLocal(texto) + '\n\n(⚠️ No se pudo conectar con Gemini; respondí con el modo básico. Verifica el Worker.)';
-    console.error('Error consultando el Worker:', error);
-  }
+  contenedor.innerHTML = resultados.map(item => `
+    <details class="accordion">
+      <summary>${item.pregunta}</summary>
+      <p class="tips-text">${item.respuesta}</p>
+    </details>
+  `).join('');
 }
-document.getElementById('btnEnviarChat').addEventListener('click', enviarMensajeChat);
-chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensajeChat(); });
 
-document.querySelectorAll('.chip-sugerencia').forEach(chip => {
-  chip.addEventListener('click', () => {
-    chatInput.value = chip.textContent;
-    enviarMensajeChat();
-  });
-});
+const buscadorFaq = document.getElementById('buscadorFaq');
+buscadorFaq.addEventListener('input', () => renderizarFaq(buscadorFaq.value));
+renderizarFaq();
 
 /* ---------- Inicialización ---------- */
 renderizarSelectorPerfiles();
